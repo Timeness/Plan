@@ -1,11 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>30-day Trading Plan</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="A 30-day trading plan with customizable profit percentage.">
+    <meta name="description" content="A customizable trading plan with profit percentage and days selection.">
     <meta name="keywords" content="trading, plan, profit, percentage, finance">
     <meta name="author" content="Your Name">
+    <title>Trading Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -14,64 +15,71 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white p-4 rounded-lg shadow-lg">
-        <h1 class="text-center text-lg font-bold mb-2">30-day Trading Plan</h1>
-        <div class="mb-4">
-            <label for="percentage" class="block text-sm font-medium text-gray-700">Enter Percentage:</label>
-            <input type="number" id="percentage" name="percentage" value="20" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <button onclick="generateTable()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Update Plan</button>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-center text-xl font-bold mb-4">Custom Trading Plan</h1>
+
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Enter Percentage:</label>
+                <input type="number" id="percentage" value="20" class="w-full px-3 py-2 border rounded focus:ring focus:ring-indigo-300 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Enter Number of Days:</label>
+                <input type="number" id="days" value="30" class="w-full px-3 py-2 border rounded focus:ring focus:ring-indigo-300 outline-none">
+            </div>
+            <button onclick="generateTable()" class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Generate Plan
+            </button>
         </div>
-        <table class="min-w-full border-collapse border border-gray-400 text-sm">
-            <thead>
-                <tr>
-                    <th class="border border-gray-400 px-2 py-1">Day #</th>
-                    <th class="border border-gray-400 px-2 py-1">Balance</th>
-                    <th class="border border-gray-400 px-2 py-1">Profit to be made</th>
-                    <th class="border border-gray-400 px-2 py-1">Expected Balance</th>
-                    <th class="border border-gray-400 px-2 py-1">Achieved Y/N</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                <!-- Table rows will be generated here -->
-            </tbody>
-        </table>
+
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 text-sm">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border px-2 py-1">Day #</th>
+                        <th class="border px-2 py-1">Balance</th>
+                        <th class="border px-2 py-1">Profit</th>
+                        <th class="border px-2 py-1">Expected Balance</th>
+                        <th class="border px-2 py-1">Achieved Y/N</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        function getInitialBalance() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const balance = urlParams.get('bal');
-            return balance ? parseFloat(balance) : 10;
-        }
-
         function generateTable() {
             const percentage = parseFloat(document.getElementById('percentage').value) / 100;
-            let balance = getInitialBalance();
+            const days = parseInt(document.getElementById('days').value);
+            const initialBalance = 10;
+            let balance = initialBalance;
             const tableBody = document.getElementById('table-body');
             tableBody.innerHTML = '';
 
-            for (let day = 1; day <= 30; day++) {
+            for (let day = 1; day <= days; day++) {
                 const profit = balance * percentage;
                 const expectedBalance = balance + profit;
 
-                const row = `
-                    <tr>
-                        <td class="border border-gray-400 px-2 py-1">${day}</td>
-                        <td class="border border-gray-400 px-2 py-1">$${balance.toFixed(2)}</td>
-                        <td class="border border-gray-400 px-2 py-1">$${profit.toFixed(2)}</td>
-                        <td class="border border-gray-400 px-2 py-1">$${expectedBalance.toFixed(2)}</td>
-                        <td class="border border-gray-400 px-2 py-1"></td>
+                tableBody.innerHTML += `
+                    <tr class="text-center">
+                        <td class="border px-2 py-1">${day}</td>
+                        <td class="border px-2 py-1">$${balance.toFixed(2)}</td>
+                        <td class="border px-2 py-1">$${profit.toFixed(2)}</td>
+                        <td class="border px-2 py-1">$${expectedBalance.toFixed(2)}</td>
+                        <td class="border px-2 py-1"></td>
                     </tr>
                 `;
 
-                tableBody.innerHTML += row;
                 balance = expectedBalance;
             }
         }
 
-        // Generate the table on initial load
         generateTable();
     </script>
+
 </body>
 </html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Professional Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <!-- GSAP CDN for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="relative z-10"></div>
+    <div id="canvas-container"></div>
+
+    <!-- React CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useEffect, useState } = React;
+
+        const Portfolio = () => {
+            const [activeSection, setActiveSection] = useState('home');
+
+            useEffect(() => {
+                // Three.js Background Animation
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+                const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+                const material = new THREE.MeshBasicMaterial({ color: 0x4a90e2, wireframe: true });
+                const spheres = [];
+
+                for (let i = 0; i < 50; i++) {
+                    const sphere = new THREE.Mesh(geometry, material);
+                    sphere.position.set(
+                        Math.random() * 100 - 50,
+                        Math.random() * 100 - 50,
+                        Math.random() * 100 - 50
+                    );
+                    scene.add(sphere);
+                    spheres.push(sphere);
+                }
+
+                camera.position.z = 50;
+
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    spheres.forEach(sphere => {
+                        sphere.rotation.x += 0.01;
+                        sphere.rotation.y += 0.01;
+                    });
+                    renderer.render(scene, camera);
+                };
+                animate();
+
+                // Window resize handler
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }, []);
+
+            return (
+                <div className="container mx-auto px-4 py-8 text-white">
+                    {/* Navigation */}
+                    <nav className="flex justify-between items-center py-6 border-b border-gray-700">
+                        <h1 className="text-2xl font-bold">Your Name</h1>
+                        <div className="space-x-6">
+                            {['Home', 'About', 'Projects', 'Contact'].map((item) => (
+                                <button
+                                    key={item}
+                                    onClick={() => setActiveSection(item.toLowerCase())}
+                                    className={`hover:text-blue-400 transition-colors ${activeSection === item.toLowerCase() ? 'text-blue-400' : ''}`}
+                                >
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Main Content */}
+                    <main className="mt-12">
+                        {activeSection === 'home' && (
+                            <div className="text-center">
+                                <h2 className="text-5xl font-bold mb-4">Welcome to My Portfolio</h2>
+                                <p className="text-xl text-gray-300">Professional Developer & Designer</p>
+                                <button className="mt-6 bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-full transition-colors">
+                                    Download CV
+                                </button>
+                            </div>
+                        )}
+
+                        {activeSection === 'about' && (
+                            <div className="max-w-3xl mx-auto">
+                                <h2 className="text-4xl font-bold mb-6">About Me</h2>
+                                <p className="text-gray-300 leading-relaxed">
+                                    I'm a passionate developer with expertise in web technologies, 
+                                    3D graphics, and modern frameworks. With X years of experience, 
+                                    I create innovative solutions that blend functionality with stunning visuals.
+                                </p>
+                            </div>
+                        )}
+
+                        {activeSection === 'projects' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {[1, 2, 3, 4].map((project) => (
+                                    <div key={project} className="bg-gray-800 p-6 rounded-lg hover:shadow-xl transition-shadow">
+                                        <h3 className="text-xl font-bold mb-2">Project {project}</h3>
+                                        <p className="text-gray-300">Innovative project description showcasing my skills</p>
+                                        <button className="mt-4 text-blue-400 hover:underline">View Details</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {activeSection === 'contact' && (
+                            <div className="max-w-md mx-auto">
+                                <h2 className="text-4xl font-bold mb-6">Get in Touch</h2>
+                                <form className="space-y-4">
+                                    <input type="text" placeholder="Name" className="w-full p-3 bg-gray-800 rounded" />
+                                    <input type="email" placeholder="Email" className="w-full p-3 bg-gray-800 rounded" />
+                                    <textarea placeholder="Message" className="w-full p-3 bg-gray-800 rounded h-32"></textarea>
+                                    <button className="w-full bg-blue-500 hover:bg-blue-600 p-3 rounded transition-colors">
+                                        Send Message
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="mt-20 py-6 border-t border-gray-700 text-center text-gray-400">
+                        <p>&copy; 2025 Soumo. All rights reserved.</p>
+                        <div className="flex justify-center space-x-4 mt-4">
+                            <a href="#" className="hover:text-blue-400">LinkedIn</a>
+                            <a href="#" className="hover:text-blue-400">GitHub</a>
+                            <a href="#" className="hover:text-blue-400">Twitter</a>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<Portfolio />, document.getElementById('root'));
+    </script>
+</body>
+</html>
